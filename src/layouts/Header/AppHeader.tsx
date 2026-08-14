@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export function AppHeader() {
   const pathname = usePathname();
@@ -53,6 +54,11 @@ export function AppHeader() {
           </BreadcrumbList>
         </Breadcrumb>
       </div>
+      <ThemeToggle
+        variant="outline"
+        size="icon"
+        className="ml-auto mr-6 lg:mr-17"
+      />
     </header>
   );
 }

@@ -12,46 +12,89 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { TerminalSquareIcon, FrameIcon, LayoutDashboard } from "lucide-react";
+import {
+  LayoutDashboard,
+  LayoutGrid,
+  ShoppingBag,
+  HandPlatter,
+  ChefHat,
+  Utensils,
+} from "lucide-react";
 import { NavUser } from "./NavUser";
-import { NavProjects } from "./NavProject";
 import { NavMain } from "./NavMain";
+import { NavKitchen } from "./NavKitchen";
 
-// This is sample data.
 const data = {
   user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
+    name: "SiWahyu",
+    email: "siwahyu@example.com",
+    avatar: "/avatar.webp",
   },
   navMain: [
     {
       title: "Dashboard",
-      url: "#",
+      url: "/dashboard",
       icon: <LayoutDashboard />,
     },
     {
       title: "Order",
+      url: "/dashboard/order",
+      icon: <ShoppingBag />,
+    },
+    {
+      title: "Category",
       url: "#",
-      icon: <TerminalSquareIcon />,
+      icon: <LayoutGrid />,
       isActive: true,
       items: [
         {
-          title: "All Order",
-          url: "/dashboard/order",
+          title: "All Category",
+          url: "/dashboard/category",
         },
         {
-          title: "Create Order",
-          url: "/dashboard/order/create",
+          title: "Create Category",
+          url: "/dashboard/category/create",
+        },
+      ],
+    },
+    {
+      title: "Menu",
+      url: "#",
+      icon: <HandPlatter />,
+      isActive: true,
+      items: [
+        {
+          title: "All Menu",
+          url: "/dashboard/menu",
+        },
+        {
+          title: "Create Menu",
+          url: "/dashboard/menu/create",
+        },
+      ],
+    },
+    {
+      title: "Table",
+      url: "#",
+      icon: <Utensils />,
+      isActive: true,
+      items: [
+        {
+          title: "All Table",
+          url: "/dashboard/table",
+        },
+        {
+          title: "Create Table",
+          url: "/dashboard/table/create",
         },
       ],
     },
   ],
-  projects: [
+  kitchen: [
     {
-      name: "Design Engineering",
+      name: "Order",
       url: "#",
-      icon: <FrameIcon />,
+      icon: <ChefHat />,
     },
   ],
 };
@@ -64,7 +107,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <SidebarMenuButton size="lg">
               <a href="#">
-                <span className="font-semibold text-lg">QRDine</span>
+                <span className="text-lg font-semibold">QRDine</span>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -72,7 +115,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
+        <NavKitchen items={data.kitchen} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />

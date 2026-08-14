@@ -53,7 +53,7 @@ export function LoginForm({
               <Field>
                 <Button
                   type="submit"
-                  className="bg-blue-600 py-5 hover:bg-blue-700 active:bg-blue-700"
+                  className="bg-blue-600 py-5 hover:bg-blue-700 active:bg-blue-700 text-white"
                 >
                   Login
                 </Button>
@@ -92,11 +92,11 @@ export function LoginForm({
               </Field>
             </FieldGroup>
           </form>
-          <div className="relative hidden bg-muted md:block">
+          <div className="relative hidden bg-muted dark:bg-muted-foreground md:block">
             <Image
               src={LoginImage}
               alt="Image"
-              className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
+              className="absolute inset-0 h-full w-full object-cover"
             />
           </div>
         </CardContent>
