@@ -29,3 +29,8 @@ export interface OrderType {
 export interface OrderResponse {
   data: OrderType[];
 }
+
+export interface OrderMutationResponse {
+  message: string;
+  data: OrderType[];
+}

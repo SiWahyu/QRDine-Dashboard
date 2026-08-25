@@ -8,3 +8,12 @@ export interface CategoryType {
 export interface CategoryResponse {
   data: CategoryType[];
 }
+
+export interface CategoryMutationResponse {
+  message: string;
+  data: CategoryType[];
+}
+export interface SingleCategoryResponse {
+  message?: string;
+  data: CategoryType;
+}

@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 
-export default function AvailableBadge({ available }: { available: boolean }) {
+export function AvailableBadge({ available }: { available: boolean }) {
   return (
     <Badge
       variant="secondary"
@@ -9,7 +9,7 @@ export default function AvailableBadge({ available }: { available: boolean }) {
       <div
         className={`size-1.5 rounded-full ${available ? "bg-blue-500" : "bg-red-500"}`}
       />
-      {available ? "Tersedia" : "Tidak Tersedia"}
+      {available ? "Available" : "Unavailable"}
     </Badge>
   );
 }

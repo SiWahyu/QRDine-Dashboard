@@ -1,6 +1,7 @@
 export interface MenuType {
   id: number;
   category: string;
+  category_id: number;
   name: string;
   slug: string;
   description: string;
@@ -13,4 +14,14 @@ export interface MenuType {
 
 export interface MenuResponse {
   data: MenuType[];
+}
+
+export interface MenuMutationResponse {
+  message: string;
+  data: MenuType[];
+}
+
+export interface SingleMenuResponse {
+  message?: string;
+  data: MenuType;
 }

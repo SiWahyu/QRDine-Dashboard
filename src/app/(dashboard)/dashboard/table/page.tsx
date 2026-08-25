@@ -1,5 +1,5 @@
-import { getTables } from "@/features/table/api/tables";
 import TableList from "@/features/table/components/TableList";
+import { getTables } from "@/features/table/services/table.service";
 
 export default async function Page() {
   const tables = await getTables();

@@ -1,13 +1,12 @@
 "use client";
 
 import { createColumnHelper } from "@tanstack/react-table";
-import { MoreHorizontalIcon, Pencil, Trash } from "lucide-react";
+import { MoreHorizontalIcon, Pencil } from "lucide-react";
 
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
@@ -122,12 +121,6 @@ export const orderColumns = columnHelper.columns([
             <DropdownMenuItem>
               <Pencil strokeWidth={1.5} />
               Edit
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem variant="destructive">
-              {" "}
-              <Trash strokeWidth={1.5} />
-              Delete
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

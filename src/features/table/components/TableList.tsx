@@ -10,7 +10,7 @@ const TableList = ({ tables }: { tables: TableType[] }) => {
       data={tables}
       columns={tableColumns}
       getRowId={(table) => String(table.id)}
-      searchKeys={["name"]}
+      searchKeys={["number"]}
       searchPlaceholder="Search table..."
       resultLabel="tables"
       emptyMessage="No table yet"

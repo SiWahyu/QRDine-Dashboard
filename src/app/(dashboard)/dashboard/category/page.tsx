@@ -1,5 +1,5 @@
-import { getCategories } from "@/features/category/api/categories";
 import CategoryList from "@/features/category/components/CategoryList";
+import { getCategories } from "@/features/category/services/category.service";
 
 export default async function Page() {
   const categories = await getCategories();

@@ -1,11 +1,20 @@
+import { FormCreateCategory } from "@/features/category/components/FormCreateCategory";
+
 export default function Page() {
   return (
-    <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-      <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-        <div className="aspect-video rounded-xl bg-muted/50" />
-        <div className="aspect-video rounded-xl bg-muted/50" />
-        <div className="aspect-video rounded-xl bg-muted/50" />
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">
+            Create Category
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Create a new category.
+          </p>
+        </div>
       </div>
+
+      <FormCreateCategory />
     </div>
   );
 }

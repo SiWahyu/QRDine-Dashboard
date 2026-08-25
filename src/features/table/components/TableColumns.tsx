@@ -5,14 +5,12 @@ import {
   ArrowDownToLine,
   MoreHorizontalIcon,
   Pencil,
-  Trash,
 } from "lucide-react";
 
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
@@ -21,12 +19,14 @@ import { type DataTableFeatures } from "@/components/data-table/data-table-featu
 
 import { TableType } from "@/types/table";
 import { ReactQRCode, ReactQRCodeRef } from "@lglab/react-qr-code";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import Link from "next/link";
 
 const columnHelper = createColumnHelper<DataTableFeatures, TableType>();
 
 const ActionCell = ({ row }: { row: { original: TableType } }) => {
   const qrRef = useRef<ReactQRCodeRef>(null);
+  const [open, setOpen] = useState(false);
 
   const handleDownloadQRCode = () => {
     qrRef.current?.download({
@@ -38,15 +38,17 @@ const ActionCell = ({ row }: { row: { original: TableType } }) => {
 
   return (
     <div className="flex items-center justify-between">
-      <div className="hidden" aria-hidden="true">
-        <ReactQRCode
-          ref={qrRef}
-          value={row.original.qr_url}
-          size={100}
-          background={"#ffffff"}
-        />
-      </div>
-      <DropdownMenu>
+      {open && (
+        <div className="hidden" aria-hidden="true">
+          <ReactQRCode
+            ref={qrRef}
+            value={row.original.qr_url}
+            size={100}
+            background={"#ffffff"}
+          />
+        </div>
+      )}
+      <DropdownMenu open={open} onOpenChange={setOpen}>
         <DropdownMenuTrigger
           render={
             <Button variant="ghost" size="icon" className="size-8">
@@ -57,17 +59,16 @@ const ActionCell = ({ row }: { row: { original: TableType } }) => {
         />
         <DropdownMenuContent align="end">
           <DropdownMenuItem>
-            <Pencil strokeWidth={1.5} />
-            Edit
+            <Link
+              href={`/dashboard/table/${row.original.id}/edit`}
+              className="flex gap-1.5 justify-start items-center w-full"
+            >
+              <Pencil strokeWidth={1.5} />
+              Edit
+            </Link>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={handleDownloadQRCode}>
             <ArrowDownToLine strokeWidth={1.5} /> Download
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem variant="destructive">
-            {" "}
-            <Trash strokeWidth={1.5} />
-            Delete
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

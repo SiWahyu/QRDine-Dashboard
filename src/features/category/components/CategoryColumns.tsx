@@ -1,13 +1,12 @@
 "use client";
 
 import { createColumnHelper } from "@tanstack/react-table";
-import { MoreHorizontalIcon, Pencil, Trash } from "lucide-react";
+import { MoreHorizontalIcon, Pencil } from "lucide-react";
 
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
@@ -15,10 +14,39 @@ import { DataTableColumnHeader } from "@/components/data-table/data-table-column
 import { type DataTableFeatures } from "@/components/data-table/data-table-features";
 
 import { CategoryType } from "@/types/category";
-import ActiveBadge from "@/features/login/components/ActiveBadge";
+import { AvailableBadge } from "@/components/badges/AvailableBadge";
 import { dateFormatter } from "@/utils/dateFormatter";
+import Link from "next/link";
 
 const columnHelper = createColumnHelper<DataTableFeatures, CategoryType>();
+
+const Actions = ({ row }: { row: { original: CategoryType } }) => {
+  return (
+    <div className="flex justify-end">
+      <DropdownMenu>
+        <DropdownMenuTrigger
+          render={
+            <Button variant="ghost" size="icon" className="size-8">
+              <MoreHorizontalIcon />
+              <span className="sr-only">Open menu</span>
+            </Button>
+          }
+        />
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem>
+            <Link
+              href={`/dashboard/category/${row.original.id}/edit`}
+              className="flex gap-1.5 justify-start items-center w-full"
+            >
+              <Pencil strokeWidth={1.5} />
+              Edit
+            </Link>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  );
+};
 
 export const categoryColumns = columnHelper.columns([
   columnHelper.accessor("name", {
@@ -35,7 +63,7 @@ export const categoryColumns = columnHelper.columns([
     header: "Is active",
     cell: ({ row }) => (
       <div className="min-w-0">
-        <ActiveBadge active={row.original.is_active} />
+        <AvailableBadge available={row.original.is_active} />
       </div>
     ),
   }),
@@ -55,31 +83,6 @@ export const categoryColumns = columnHelper.columns([
     id: "actions",
     header: () => <span className="sr-only">Actions</span>,
     enableSorting: false,
-    cell: () => (
-      <div className="flex justify-end">
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            render={
-              <Button variant="ghost" size="icon" className="size-8">
-                <MoreHorizontalIcon />
-                <span className="sr-only">Open menu</span>
-              </Button>
-            }
-          />
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem>
-              <Pencil strokeWidth={1.5} />
-              Edit
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem variant="destructive">
-              {" "}
-              <Trash strokeWidth={1} />
-              Delete
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-    ),
+    cell: ({ row }) => <Actions row={row} />,
   }),
 ]);

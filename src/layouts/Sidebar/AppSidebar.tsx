@@ -17,12 +17,11 @@ import {
   LayoutGrid,
   ShoppingBag,
   HandPlatter,
-  ChefHat,
-  Utensils,
+  Armchair,
 } from "lucide-react";
 import { NavUser } from "./NavUser";
 import { NavMain } from "./NavMain";
-import { NavKitchen } from "./NavKitchen";
+import { usePathname } from "next/navigation";
 
 const data = {
   user: {
@@ -43,9 +42,8 @@ const data = {
     },
     {
       title: "Category",
-      url: "#",
+      url: "/dashboard/category",
       icon: <LayoutGrid />,
-      isActive: true,
       items: [
         {
           title: "All Category",
@@ -59,9 +57,8 @@ const data = {
     },
     {
       title: "Menu",
-      url: "#",
+      url: "/dashboard/menu",
       icon: <HandPlatter />,
-      isActive: true,
       items: [
         {
           title: "All Menu",
@@ -75,9 +72,8 @@ const data = {
     },
     {
       title: "Table",
-      url: "#",
-      icon: <Utensils />,
-      isActive: true,
+      url: "/dashboard/table",
+      icon: <Armchair />,
       items: [
         {
           title: "All Table",
@@ -90,16 +86,19 @@ const data = {
       ],
     },
   ],
-  kitchen: [
-    {
-      name: "Order",
-      url: "#",
-      icon: <ChefHat />,
-    },
-  ],
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const pathname = usePathname();
+
+  const navMain = data.navMain.map((item) => ({
+    ...item,
+    isActive:
+      item.title === "Dashboard"
+        ? pathname === item.url
+        : pathname.startsWith(item.url),
+  }));
+
   return (
     <Sidebar {...props}>
       <SidebarHeader>
@@ -114,8 +113,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavKitchen items={data.kitchen} />
+        <NavMain items={navMain} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />

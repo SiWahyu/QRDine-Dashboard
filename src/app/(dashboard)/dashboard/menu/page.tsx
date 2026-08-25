@@ -1,4 +1,4 @@
-import { getMenus } from "@/features/menu/api/menus";
+import { getMenus } from "@/features/menu/services/menu.service";
 import MenuList from "@/features/menu/components/MenuList";
 
 export default async function Page() {

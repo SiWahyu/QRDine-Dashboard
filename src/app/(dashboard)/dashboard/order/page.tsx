@@ -1,4 +1,4 @@
-import { getOrders } from "@/features/order/api/orders";
+import { getOrders } from "@/features/order/services/order.service";
 import OrderList from "@/features/order/components/OrderList";
 
 export default async function Page() {

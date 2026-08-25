@@ -2,7 +2,7 @@
 
 import { DataTable } from "@/components/data-table/data-table";
 import { CategoryType } from "@/types/category";
-import { categoryColumns } from "./CategoryColumn";
+import { categoryColumns } from "./CategoryColumns";
 
 const CategoryList = ({ categories }: { categories: CategoryType[] }) => {
   return (

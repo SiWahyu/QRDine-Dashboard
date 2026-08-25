@@ -1,13 +1,12 @@
 "use client";
 
 import { createColumnHelper } from "@tanstack/react-table";
-import { MoreHorizontalIcon, Pencil, Trash } from "lucide-react";
+import { MoreHorizontalIcon, Pencil } from "lucide-react";
 
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
@@ -16,12 +15,41 @@ import { type DataTableFeatures } from "@/components/data-table/data-table-featu
 
 import type { MenuType } from "@/types/menu";
 import Image from "next/image";
-import { normalizeImageUrl } from "@/utils/normalizeImageUrl";
-import AvailableBadge from "./AvailableBadge";
+import { AvailableBadge } from "@/components/badges/AvailableBadge";
 import { currencyFormatter } from "@/utils/currencyFormatter";
 import { dateFormatter } from "@/utils/dateFormatter";
+import { getImageUrl } from "@/utils/getImageUrl";
+import Link from "next/link";
 
 const columnHelper = createColumnHelper<DataTableFeatures, MenuType>();
+
+const Actions = ({ row }: { row: { original: MenuType } }) => {
+  return (
+    <div className="flex justify-end">
+      <DropdownMenu>
+        <DropdownMenuTrigger
+          render={
+            <Button variant="ghost" size="icon" className="size-8">
+              <MoreHorizontalIcon />
+              <span className="sr-only">Open menu</span>
+            </Button>
+          }
+        />
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem>
+            <Link
+              href={`/dashboard/menu/${row.original.id}/edit`}
+              className="flex gap-1.5 justify-start items-center w-full"
+            >
+              <Pencil strokeWidth={1.5} />
+              Edit
+            </Link>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  );
+};
 
 export const menuColumns = columnHelper.columns([
   columnHelper.accessor("name", {
@@ -31,7 +59,7 @@ export const menuColumns = columnHelper.columns([
     cell: ({ row }) => (
       <div className="flex items-center gap-3">
         <Image
-          src={normalizeImageUrl(row.original.image)}
+          src={getImageUrl(row.original.image)}
           alt={row.original.name}
           width={40}
           height={40}
@@ -54,7 +82,7 @@ export const menuColumns = columnHelper.columns([
   }),
   columnHelper.accessor("slug", {
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Customer" />
+      <DataTableColumnHeader column={column} title="Slug" />
     ),
     cell: ({ row }) => (
       <div className="min-w-0">
@@ -100,31 +128,6 @@ export const menuColumns = columnHelper.columns([
     id: "actions",
     header: () => <span className="sr-only">Actions</span>,
     enableSorting: false,
-    cell: () => (
-      <div className="flex justify-end">
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            render={
-              <Button variant="ghost" size="icon" className="size-8">
-                <MoreHorizontalIcon />
-                <span className="sr-only">Open menu</span>
-              </Button>
-            }
-          />
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem>
-              <Pencil strokeWidth={1.5} />
-              Edit
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem variant="destructive">
-              {" "}
-              <Trash strokeWidth={1.5} />
-              Delete
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-    ),
+    cell: ({ row }) => <Actions row={row} />,
   }),
 ]);
