@@ -16,6 +16,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { useLogout } from "@/features/auth/hooks/useLogout";
 import {
   ChevronsUpDownIcon,
   SparklesIcon,
@@ -24,6 +25,7 @@ import {
   BellIcon,
   LogOutIcon,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export function NavUser({
   user,
@@ -31,10 +33,24 @@ export function NavUser({
   user: {
     name: string;
     email: string;
+    role: string;
     avatar: string;
   };
 }) {
   const { isMobile } = useSidebar();
+
+  const router = useRouter();
+
+  const logout = useLogout();
+
+  const handleLogout = () => {
+    logout.mutate(undefined, {
+      onSuccess: () => {
+        router.push("/auth/login");
+      },
+    });
+  };
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -97,7 +113,7 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout}>
               <LogOutIcon />
               Log out
             </DropdownMenuItem>

@@ -1,27 +1,66 @@
+"use client";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Field,
   FieldDescription,
+  FieldError,
   FieldGroup,
   FieldLabel,
   FieldSeparator,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 
-import LoginImage from "@/features/login/assets/Login.svg";
+import LoginImage from "@/features/auth/assets/Login.svg";
 import Image from "next/image";
+import { Controller, useForm } from "react-hook-form";
+import { LoginFormValues, loginSchema } from "../schemas/loginSchema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useLogin } from "../hooks/useLogin";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const form = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const router = useRouter();
+
+  const [error, setError] = useState<string | null>(null);
+
+  const [showPassword, setShowPassword] = useState(false);
+
+  const login = useLogin();
+
+  const onSubmit = async (data: LoginFormValues) => {
+    login.mutate(data, {
+      onSuccess: (result) => {
+        if (result.user.role === "admin") {
+          router.push("/dashboard");
+        } else if (result.user.role === "kitchen") {
+          router.push("/kitchen/order");
+        }
+      },
+      onError: (error: { message: string }) => {
+        setError(error.message ?? "Login failed");
+      },
+    });
+  };
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="overflow-hidden p-0 ">
         <CardContent className="grid p-0 md:grid-cols-2">
-          <form className="p-6 md:p-8">
+          <form className="p-6 md:p-8" onSubmit={form.handleSubmit(onSubmit)}>
             <FieldGroup>
               <div className="flex flex-col items-center gap-2 text-center">
                 <h1 className="text-2xl font-bold">Welcome back</h1>
@@ -29,33 +68,75 @@ export function LoginForm({
                   Login to your Acme Inc account
                 </p>
               </div>
-              <Field>
-                <FieldLabel htmlFor="email">Email</FieldLabel>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="m@example.com"
-                  required
-                />
-              </Field>
-              <Field>
-                <div className="flex items-center">
-                  <FieldLabel htmlFor="password">Password</FieldLabel>
-                  <a
-                    href="#"
-                    className="ml-auto text-sm underline-offset-2 hover:underline"
-                  >
-                    Forgot your password?
-                  </a>
-                </div>
-                <Input id="password" type="password" required />
-              </Field>
+              <Controller
+                name="email"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field>
+                    <FieldLabel htmlFor="email">Email</FieldLabel>
+                    <Input
+                      {...field}
+                      aria-invalid={fieldState.invalid}
+                      id="email"
+                      type="email"
+                      placeholder="m@example.com"
+                    />
+                    {fieldState.error && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+              <Controller
+                name="password"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field>
+                    <div className="flex items-center">
+                      <FieldLabel htmlFor="password">Password</FieldLabel>
+                      <a
+                        href="#"
+                        className="ml-auto text-sm underline-offset-2 hover:underline"
+                      >
+                        Forgot your password?
+                      </a>
+                    </div>
+                    <div className="relative">
+                      <Input
+                        {...field}
+                        aria-invalid={fieldState.invalid}
+                        id="password"
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Enter your password"
+                      />
+                      <Button
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute top-0 right-0 h-full px-3 hover:bg-transparent"
+                        size="icon"
+                        type="button"
+                        variant="ghost"
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-4 w-4 text-muted-foreground" />
+                        ) : (
+                          <Eye className="h-4 w-4 text-muted-foreground" />
+                        )}
+                      </Button>
+                    </div>
+                    {fieldState.error && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+              {error && <p className="text-red-500 text-sm">{error}</p>}
               <Field>
                 <Button
                   type="submit"
                   className="bg-blue-600 py-5 hover:bg-blue-700 active:bg-blue-700 text-white"
                 >
-                  Login
+                  {login.isPending && <Loader2 className="animate-spin" />}
+                  {login.isPending ? "Loading..." : "Login"}
                 </Button>
               </Field>
               <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
@@ -97,6 +178,7 @@ export function LoginForm({
               src={LoginImage}
               alt="Image"
               className="absolute inset-0 h-full w-full object-cover"
+              loading="eager"
             />
           </div>
         </CardContent>

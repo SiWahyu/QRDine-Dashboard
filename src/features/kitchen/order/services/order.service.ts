@@ -1,4 +1,4 @@
-import { apiFetch } from "@/lib/client";
+import { clientFetch } from "@/lib/client-fetch";
 import {
   KitchenOrderMutationResponse,
   KitchenOrderResponse,
@@ -7,7 +7,7 @@ import {
 import type { OrderStatus } from "@/types/order";
 
 export async function getOrders(): Promise<KitchenOrderType[]> {
-  const res = await apiFetch<KitchenOrderResponse>("/kitchen/orders", {
+  const res = await clientFetch<KitchenOrderResponse>("/kitchen/orders", {
     cache: "no-store",
   });
 
@@ -15,7 +15,7 @@ export async function getOrders(): Promise<KitchenOrderType[]> {
 }
 
 export async function updateOrderStatus(id: number, status: OrderStatus) {
-  const res = await apiFetch<KitchenOrderMutationResponse>(
+  const res = await clientFetch<KitchenOrderMutationResponse>(
     `/kitchen/orders/${id}/status`,
     {
       method: "PATCH",
