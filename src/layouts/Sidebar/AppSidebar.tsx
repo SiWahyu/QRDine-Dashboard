@@ -22,76 +22,87 @@ import {
 import { NavUser } from "./NavUser";
 import { NavMain } from "./NavMain";
 import { usePathname } from "next/navigation";
+import { UserType } from "@/types/user";
 
-const data = {
-  user: {
-    name: "SiWahyu",
-    email: "siwahyu@example.com",
-    avatar: "/avatar.webp",
+const adminNavItems = [
+  {
+    title: "Dashboard",
+    url: "/dashboard",
+    icon: <LayoutDashboard />,
   },
-  navMain: [
-    {
-      title: "Dashboard",
-      url: "/dashboard",
-      icon: <LayoutDashboard />,
-    },
-    {
-      title: "Order",
-      url: "/dashboard/order",
-      icon: <ShoppingBag />,
-    },
-    {
-      title: "Category",
-      url: "/dashboard/category",
-      icon: <LayoutGrid />,
-      items: [
-        {
-          title: "All Category",
-          url: "/dashboard/category",
-        },
-        {
-          title: "Create Category",
-          url: "/dashboard/category/create",
-        },
-      ],
-    },
-    {
-      title: "Menu",
-      url: "/dashboard/menu",
-      icon: <HandPlatter />,
-      items: [
-        {
-          title: "All Menu",
-          url: "/dashboard/menu",
-        },
-        {
-          title: "Create Menu",
-          url: "/dashboard/menu/create",
-        },
-      ],
-    },
-    {
-      title: "Table",
-      url: "/dashboard/table",
-      icon: <Armchair />,
-      items: [
-        {
-          title: "All Table",
-          url: "/dashboard/table",
-        },
-        {
-          title: "Create Table",
-          url: "/dashboard/table/create",
-        },
-      ],
-    },
-  ],
-};
+  {
+    title: "Order",
+    url: "/dashboard/order",
+    icon: <ShoppingBag />,
+  },
+  {
+    title: "Category",
+    url: "/dashboard/category",
+    icon: <LayoutGrid />,
+    items: [
+      {
+        title: "All Category",
+        url: "/dashboard/category",
+      },
+      {
+        title: "Create Category",
+        url: "/dashboard/category/create",
+      },
+    ],
+  },
+  {
+    title: "Menu",
+    url: "/dashboard/menu",
+    icon: <HandPlatter />,
+    items: [
+      {
+        title: "All Menu",
+        url: "/dashboard/menu",
+      },
+      {
+        title: "Create Menu",
+        url: "/dashboard/menu/create",
+      },
+    ],
+  },
+  {
+    title: "Table",
+    url: "/dashboard/table",
+    icon: <Armchair />,
+    items: [
+      {
+        title: "All Table",
+        url: "/dashboard/table",
+      },
+      {
+        title: "Create Table",
+        url: "/dashboard/table/create",
+      },
+    ],
+  },
+];
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+const kitchenNavItems = [
+  {
+    title: "Order",
+    url: "/kitchen/order",
+    icon: <ShoppingBag />,
+  },
+];
+
+export function AppSidebar({
+  user,
+  ...props
+}: React.ComponentProps<typeof Sidebar> & {
+  user: UserType;
+}) {
   const pathname = usePathname();
+  const isAdmin = user.role === "admin";
 
-  const navMain = data.navMain.map((item) => ({
+  const navItems = isAdmin ? adminNavItems : kitchenNavItems;
+  const navLabel = isAdmin ? "Dashboard" : "Kitchen";
+
+  const activeNavItems = navItems.map((item) => ({
     ...item,
     isActive:
       item.title === "Dashboard"
@@ -113,10 +124,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={navMain} />
+        <NavMain items={activeNavItems} label={navLabel} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser
+          user={{
+            ...user,
+            avatar: "/avatar.webp",
+          }}
+        />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

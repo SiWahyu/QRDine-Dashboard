@@ -1,15 +1,17 @@
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { getCurrentUser } from "@/features/auth/services/user.service";
 import { AppHeader } from "@/layouts/Header/AppHeader";
-import { SidebarKitchen } from "@/layouts/SidebarKitchen/SidebarKitchen";
+import { AppSidebar } from "@/layouts/Sidebar/AppSidebar";
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const user = await getCurrentUser();
   return (
     <SidebarProvider>
-      <SidebarKitchen />
+      <AppSidebar user={user} />
 
       <SidebarInset className="min-w-0 overflow-hidden">
         <AppHeader />

@@ -60,10 +60,16 @@ function NavCollapsibleItem({ item }: { item: NavItem }) {
   );
 }
 
-export function NavMain({ items }: { items: NavItem[] }) {
+export function NavMain({
+  items,
+  label = "Dashboard",
+}: {
+  items: NavItem[];
+  label?: string;
+}) {
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Dashboard</SidebarGroupLabel>
+      <SidebarGroupLabel>{label}</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => {
           if (!item.items?.length) {
