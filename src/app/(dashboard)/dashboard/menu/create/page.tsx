@@ -1,6 +1,8 @@
+import { getCategories } from "@/features/category/services/category.service";
 import { FormCreateMenu } from "@/features/menu/components/FormCreateMenu";
 
-export default function Page() {
+export default async function Page() {
+  const categories = await getCategories();
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
@@ -10,7 +12,7 @@ export default function Page() {
         </div>
       </div>
 
-      <FormCreateMenu />
+      <FormCreateMenu categories={categories} />
     </div>
   );
 }

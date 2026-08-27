@@ -24,7 +24,7 @@ import { Check, Loader2, Tag, X } from "lucide-react";
 import { toast } from "sonner";
 import { CategoryType } from "@/types/category";
 import { useRouter } from "next/navigation";
-import { useUpdateCategory } from "../hooks/useUpdateCategory";
+import { updateCategoryAction } from "../actions/category-action";
 
 export function FormEditCategory({ category }: { category: CategoryType }) {
   const router = useRouter();
@@ -37,26 +37,21 @@ export function FormEditCategory({ category }: { category: CategoryType }) {
     },
   });
 
-  const updateCategory = useUpdateCategory();
+  const onsubmit = async (data: CategoryFormValues) => {
+    const result = await updateCategoryAction(category.id, data);
 
-  const onsubmit = (data: CategoryFormValues) => {
-    updateCategory.mutate(
-      { id: category.id, data },
-      {
-        onSuccess: () => {
-          toast.success("Category updated successfully", {
-            position: "top-right",
-          });
-          router.push("/dashboard/category");
-          router.refresh();
-        },
-        onError: (error) => {
-          toast.error(error.message, {
-            position: "top-right",
-          });
-        },
-      },
-    );
+    if (!result.success) {
+      toast.error(result.message, {
+        position: "top-right",
+      });
+      return;
+    }
+
+    toast.success(result.message, {
+      position: "top-right",
+    });
+    router.push("/dashboard/category");
+    router.refresh();
   };
 
   return (
@@ -155,10 +150,10 @@ export function FormEditCategory({ category }: { category: CategoryType }) {
           type="button"
           variant="outline"
           onClick={() => router.back()}
-          disabled={updateCategory.isPending}
+          disabled={form.formState.isSubmitting}
           className="px-6"
         >
-          {updateCategory.isPending ? (
+          {form.formState.isSubmitting ? (
             <Loader2 className="animate-spin" />
           ) : (
             <X />
@@ -168,15 +163,15 @@ export function FormEditCategory({ category }: { category: CategoryType }) {
         <Button
           type="submit"
           form="update-category-form"
-          disabled={updateCategory.isPending}
+          disabled={form.formState.isSubmitting}
           className="px-6"
         >
-          {updateCategory.isPending ? (
+          {form.formState.isSubmitting ? (
             <Loader2 className="animate-spin" />
           ) : (
             <Check />
           )}
-          {updateCategory.isPending ? "Saving..." : "Save Changes"}
+          {form.formState.isSubmitting ? "Saving..." : "Save Changes"}
         </Button>
       </CardFooter>
     </Card>

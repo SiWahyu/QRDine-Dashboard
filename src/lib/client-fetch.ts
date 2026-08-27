@@ -6,22 +6,21 @@ export async function clientFetch<T>(
 ): Promise<T> {
   const isFormData = options?.body instanceof FormData;
 
-  const res = await fetch(`/api${path}`, {
-    ...options,
-    headers: {
-      Accept: "application/json",
-      ...(isFormData ? {} : { "Content-Type": "application/json" }),
-      ...options?.headers,
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/api${path}`,
+    {
+      ...options,
+      headers: {
+        Accept: "application/json",
+        ...(isFormData ? {} : { "Content-Type": "application/json" }),
+        ...options?.headers,
+      },
     },
-  });
-
-  if (res.status === 401) {
-    window.location.href = "/login?reason=session_expired";
-    throw new ApiError(401, "Unauthenticated");
-  }
+  );
 
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
+
     throw new ApiError(
       res.status,
       body.message ?? "Request failed",
@@ -29,5 +28,5 @@ export async function clientFetch<T>(
     );
   }
 
-  return res.json() as Promise<T>;
+  return res.json();
 }

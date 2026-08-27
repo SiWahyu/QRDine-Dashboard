@@ -23,7 +23,7 @@ import { Check, Hash, Loader2, X } from "lucide-react";
 import { toast } from "sonner";
 import { TableType } from "@/types/table";
 import { useRouter } from "next/navigation";
-import { useUpdateTable } from "../hooks/useUpdateTable";
+import { updateTableAction } from "../actions/table-action";
 
 export function FormEditTable({ table }: { table: TableType }) {
   const router = useRouter();
@@ -36,26 +36,21 @@ export function FormEditTable({ table }: { table: TableType }) {
     },
   });
 
-  const updateTable = useUpdateTable();
+  const onsubmit = async (data: TableFormValues) => {
+    const result = await updateTableAction(table.id, data);
 
-  const onsubmit = (data: TableFormValues) => {
-    updateTable.mutate(
-      { id: table.id, data },
-      {
-        onSuccess: () => {
-          toast.success("Table updated successfully", {
-            position: "top-right",
-          });
-          router.push("/dashboard/table");
-          router.refresh();
-        },
-        onError: (error) => {
-          toast.error(error.message, {
-            position: "top-right",
-          });
-        },
-      },
-    );
+    if (!result.success) {
+      toast.error(result.message, {
+        position: "top-right",
+      });
+      return;
+    }
+
+    toast.success(result.message, {
+      position: "top-right",
+    });
+    router.push("/dashboard/table");
+    router.refresh();
   };
 
   return (
@@ -109,10 +104,10 @@ export function FormEditTable({ table }: { table: TableType }) {
           type="button"
           variant="outline"
           onClick={() => router.back()}
-          disabled={updateTable.isPending}
+          disabled={form.formState.isSubmitting}
           className="px-6"
         >
-          {updateTable.isPending ? (
+          {form.formState.isSubmitting ? (
             <Loader2 className="animate-spin" />
           ) : (
             <X />
@@ -122,15 +117,15 @@ export function FormEditTable({ table }: { table: TableType }) {
         <Button
           type="submit"
           form="update-table-form"
-          disabled={updateTable.isPending}
+          disabled={form.formState.isSubmitting}
           className="px-6"
         >
-          {updateTable.isPending ? (
+          {form.formState.isSubmitting ? (
             <Loader2 className="animate-spin" />
           ) : (
             <Check />
           )}
-          {updateTable.isPending ? "Saving..." : "Save Changes"}
+          {form.formState.isSubmitting ? "Saving..." : "Save Changes"}
         </Button>
       </CardFooter>
     </Card>

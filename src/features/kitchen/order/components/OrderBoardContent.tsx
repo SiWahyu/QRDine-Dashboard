@@ -3,7 +3,6 @@ import { DragDropProvider, DragOverlay } from "@dnd-kit/react";
 import { toast } from "sonner";
 
 import type { KitchenOrderType } from "@/types/kitchen-order";
-import { useUpdateOrderStatus } from "../hooks/useUpdateOrderStatus";
 
 import { OrderCard, type OrderData } from "./OrderCard";
 import { OrderColumn } from "./OrderColumn";
@@ -14,6 +13,7 @@ import {
   type KitchenStatus,
   type Orders,
 } from "./orderBoardConfig";
+import { updateOrderStatusAction } from "../actions/order-action";
 
 export function OrderBoardContent({ data }: { data: KitchenOrderType[] }) {
   const [orders, setOrders] = useState<Orders>(() => groupOrders(data));
@@ -24,11 +24,9 @@ export function OrderBoardContent({ data }: { data: KitchenOrderType[] }) {
     setOrders(groupOrders(data));
   }
 
-  const updateOrderStatus = useUpdateOrderStatus();
-
   return (
     <DragDropProvider<OrderData>
-      onDragEnd={(event) => {
+      onDragEnd={async (event) => {
         const { source, target } = event.operation;
 
         if (!source || !target) return;
@@ -65,19 +63,16 @@ export function OrderBoardContent({ data }: { data: KitchenOrderType[] }) {
 
         if (!order || order.status === newStatus) return;
 
-        updateOrderStatus.mutate(
-          { id: order.id, status: newStatus },
-          {
-            onSuccess: () => {
-              toast.success(
-                `${order.order_number} moved to ${STATUS_LABEL[newStatus]}`,
-                { position: "top-right" },
-              );
-            },
-            onError: (error) => {
-              toast.error(error.message, { position: "top-right" });
-            },
-          },
+        const result = await updateOrderStatusAction(order.id, newStatus);
+
+        if (!result.success) {
+          toast.error(result.message, { position: "top-right" });
+          return;
+        }
+
+        toast.success(
+          `${order.order_number} moved to ${STATUS_LABEL[newStatus]}`,
+          { position: "top-right" },
         );
       }}
     >

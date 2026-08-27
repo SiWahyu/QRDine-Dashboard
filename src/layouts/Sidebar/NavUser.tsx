@@ -16,7 +16,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { useLogout } from "@/features/auth/hooks/useLogout";
+import { logoutAction } from "@/features/auth/actions/auth-action";
 import {
   ChevronsUpDownIcon,
   SparklesIcon,
@@ -41,14 +41,9 @@ export function NavUser({
 
   const router = useRouter();
 
-  const logout = useLogout();
-
-  const handleLogout = () => {
-    logout.mutate(undefined, {
-      onSuccess: () => {
-        router.push("/auth/login");
-      },
-    });
+  const handleLogout = async () => {
+    await logoutAction();
+    router.push("/auth/login");
   };
 
   return (

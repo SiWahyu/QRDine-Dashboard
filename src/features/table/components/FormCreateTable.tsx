@@ -21,8 +21,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Check, Hash, Loader2, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
 import { TableFormValues, tableSchema } from "../schemas/tableSchema";
-import { useCreateTable } from "../hooks/useCreateTable";
 import { useRouter } from "next/navigation";
+import { createTableAction } from "../actions/table-action";
 
 export function FormCreateTable() {
   const router = useRouter();
@@ -35,23 +35,21 @@ export function FormCreateTable() {
     },
   });
 
-  const createTable = useCreateTable();
+  const onsubmit = async (data: TableFormValues) => {
+    const result = await createTableAction(data);
 
-  const onsubmit = (data: TableFormValues) => {
-    createTable.mutate(data, {
-      onSuccess: () => {
-        toast.success("Table created successfully", {
-          position: "top-right",
-        });
-        router.push("/dashboard/table");
-        router.refresh();
-      },
-      onError: (error) => {
-        toast.error(error.message, {
-          position: "top-right",
-        });
-      },
+    if (!result.success) {
+      toast.error(result.message, {
+        position: "top-right",
+      });
+      return;
+    }
+
+    toast.success(result.message, {
+      position: "top-right",
     });
+    router.push("/dashboard/table");
+    router.refresh();
   };
 
   return (
@@ -105,10 +103,10 @@ export function FormCreateTable() {
           type="button"
           variant="outline"
           onClick={() => form.reset()}
-          disabled={createTable.isPending}
+          disabled={form.formState.isSubmitting}
           className="px-6"
         >
-          {createTable.isPending ? (
+          {form.formState.isSubmitting ? (
             <Loader2 className="animate-spin" />
           ) : (
             <RotateCcw />
@@ -118,15 +116,15 @@ export function FormCreateTable() {
         <Button
           type="submit"
           form="create-table-form"
-          disabled={createTable.isPending}
+          disabled={form.formState.isSubmitting}
           className="px-6"
         >
-          {createTable.isPending ? (
+          {form.formState.isSubmitting ? (
             <Loader2 className="animate-spin" />
           ) : (
             <Check />
           )}
-          {createTable.isPending ? "Submitting..." : "Submit"}
+          {form.formState.isSubmitting ? "Submitting..." : "Submit"}
         </Button>
       </CardFooter>
     </Card>

@@ -35,23 +35,21 @@ import {
 
 import { toast } from "sonner";
 
-import { useCreateMenu } from "../hooks/useCreateMenu";
 import { Textarea } from "@/components/ui/textarea";
 import { useCallback } from "react";
 import { cn } from "@/lib/utils";
 import { SelectCategory } from "./SelectCategory";
-import { useCategories } from "@/features/category/hooks/useCategory";
 import {
   CreateMenuFormInput,
   CreateMenuFormOutput,
   createMenuSchema,
 } from "../schemas/menuSchema";
 import { useRouter } from "next/navigation";
+import { createMenuAction } from "../actions/menu-action";
+import { CategoryType } from "@/types/category";
 
-export function FormCreateMenu() {
+export function FormCreateMenu({ categories }: { categories: CategoryType[] }) {
   const router = useRouter();
-
-  const { data: categories, isPending: isCategoriesPending } = useCategories();
 
   const onFileReject = useCallback((file: File, message: string) => {
     toast(message, {
@@ -71,23 +69,21 @@ export function FormCreateMenu() {
     },
   });
 
-  const createMenu = useCreateMenu();
+  const onsubmit = async (data: CreateMenuFormOutput) => {
+    const result = await createMenuAction(data);
 
-  const onsubmit = (data: CreateMenuFormOutput) => {
-    createMenu.mutate(data, {
-      onSuccess: () => {
-        toast.success("Menu created successfully", {
-          position: "top-right",
-        });
-        router.push("/dashboard/menu");
-        router.refresh();
-      },
-      onError: (error) => {
-        toast.error(error.message, {
-          position: "top-right",
-        });
-      },
+    if (!result.success) {
+      toast.error(result.message, {
+        position: "top-right",
+      });
+      return;
+    }
+
+    toast.success(result.message, {
+      position: "top-right",
     });
+    router.push("/dashboard/menu");
+    router.refresh();
   };
 
   return (
@@ -186,7 +182,6 @@ export function FormCreateMenu() {
                       categories={categories ?? []}
                       onChange={field.onChange}
                       value={selectedCategory}
-                      isPending={isCategoriesPending}
                     />
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />
@@ -343,10 +338,10 @@ export function FormCreateMenu() {
           type="button"
           variant="outline"
           onClick={() => form.reset()}
-          disabled={createMenu.isPending}
+          disabled={form.formState.isSubmitting}
           className="px-6"
         >
-          {createMenu.isPending ? (
+          {form.formState.isSubmitting ? (
             <Loader2 className="animate-spin" />
           ) : (
             <RotateCcw />
@@ -356,15 +351,15 @@ export function FormCreateMenu() {
         <Button
           type="submit"
           form="create-menu-form"
-          disabled={createMenu.isPending}
+          disabled={form.formState.isSubmitting}
           className="px-6"
         >
-          {createMenu.isPending ? (
+          {form.formState.isSubmitting ? (
             <Loader2 className="animate-spin" />
           ) : (
             <Check />
           )}
-          {createMenu.isPending ? "Submitting..." : "Submit"}
+          {form.formState.isSubmitting ? "Submitting..." : "Submit"}
         </Button>
       </CardFooter>
     </Card>

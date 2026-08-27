@@ -14,14 +14,12 @@ type SelectCategoryProps = {
   categories: CategoryType[];
   value: CategoryType | null;
   onChange: (value: number | null) => void;
-  isPending: boolean;
 };
 
 export function SelectCategory({
   categories,
   value,
   onChange,
-  isPending,
 }: SelectCategoryProps) {
   return (
     <Combobox
@@ -32,15 +30,10 @@ export function SelectCategory({
       }}
       itemToStringLabel={(item) => item.name}
     >
-      <ComboboxInput
-        placeholder={isPending ? "Loading categories..." : "Select category"}
-        showClear
-      />
+      <ComboboxInput placeholder={"Select category"} showClear />
 
       <ComboboxContent>
-        <ComboboxEmpty>
-          {isPending ? "Loading categories..." : "No category found."}
-        </ComboboxEmpty>
+        <ComboboxEmpty>{"No category found."}</ComboboxEmpty>
 
         <ComboboxList>
           {(item: CategoryType) => (

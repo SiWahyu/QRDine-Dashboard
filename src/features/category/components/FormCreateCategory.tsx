@@ -21,9 +21,9 @@ import { Controller, useForm } from "react-hook-form";
 import { CategoryFormValues, categorySchema } from "../schemas/categorySchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Check, Loader2, RotateCcw, Tag } from "lucide-react";
-import { useCreateCategory } from "../hooks/useCreateCategory";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { createCategoryAction } from "../actions/category-action";
 
 export function FormCreateCategory() {
   const router = useRouter();
@@ -36,23 +36,21 @@ export function FormCreateCategory() {
     },
   });
 
-  const createCategory = useCreateCategory();
+  const onsubmit = async (data: CategoryFormValues) => {
+    const result = await createCategoryAction(data);
 
-  const onsubmit = (data: CategoryFormValues) => {
-    createCategory.mutate(data, {
-      onSuccess: () => {
-        toast.success("Category created successfully", {
-          position: "top-right",
-        });
-        router.push("/dashboard/category");
-        router.refresh();
-      },
-      onError: (error) => {
-        toast.error(error.message, {
-          position: "top-right",
-        });
-      },
+    if (!result.success) {
+      toast.error(result.message, {
+        position: "top-right",
+      });
+      return;
+    }
+
+    toast.success(result.message, {
+      position: "top-right",
     });
+    router.push("/dashboard/category");
+    router.refresh();
   };
 
   return (
@@ -151,10 +149,10 @@ export function FormCreateCategory() {
           type="button"
           variant="outline"
           onClick={() => form.reset()}
-          disabled={createCategory.isPending}
+          disabled={form.formState.isSubmitting}
           className="px-6"
         >
-          {createCategory.isPending ? (
+          {form.formState.isSubmitting ? (
             <Loader2 className="animate-spin" />
           ) : (
             <RotateCcw />
@@ -164,15 +162,15 @@ export function FormCreateCategory() {
         <Button
           type="submit"
           form="create-category-form"
-          disabled={createCategory.isPending}
+          disabled={form.formState.isSubmitting}
           className="px-6"
         >
-          {createCategory.isPending ? (
+          {form.formState.isSubmitting ? (
             <Loader2 className="animate-spin" />
           ) : (
             <Check />
           )}
-          {createCategory.isPending ? "Submitting..." : "Submit"}
+          {form.formState.isSubmitting ? "Submitting..." : "Submit"}
         </Button>
       </CardFooter>
     </Card>

@@ -20,7 +20,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useLogin } from "../hooks/useLogin";
+import { loginAction } from "../actions/auth-action";
 
 export function LoginForm({
   className,
@@ -40,21 +40,19 @@ export function LoginForm({
 
   const [showPassword, setShowPassword] = useState(false);
 
-  const login = useLogin();
-
   const onSubmit = async (data: LoginFormValues) => {
-    login.mutate(data, {
-      onSuccess: (result) => {
-        if (result.user.role === "admin") {
-          router.push("/dashboard");
-        } else if (result.user.role === "kitchen") {
-          router.push("/kitchen/order");
-        }
-      },
-      onError: (error: { message: string }) => {
-        setError(error.message ?? "Login failed");
-      },
-    });
+    const result = await loginAction(data);
+
+    if (!result.success) {
+      setError(result.message ?? "Login failed");
+      return;
+    }
+
+    if (result.user.role === "admin") {
+      router.push("/dashboard");
+    } else if (result.user.role === "kitchen") {
+      router.push("/kitchen/order");
+    }
   };
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -135,8 +133,10 @@ export function LoginForm({
                   type="submit"
                   className="bg-blue-600 py-5 hover:bg-blue-700 active:bg-blue-700 text-white"
                 >
-                  {login.isPending && <Loader2 className="animate-spin" />}
-                  {login.isPending ? "Loading..." : "Login"}
+                  {form.formState.isSubmitting && (
+                    <Loader2 className="animate-spin" />
+                  )}
+                  {form.formState.isSubmitting ? "Loading..." : "Login"}
                 </Button>
               </Field>
               <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">

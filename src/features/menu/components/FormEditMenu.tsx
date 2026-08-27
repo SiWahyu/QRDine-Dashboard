@@ -39,7 +39,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { useCallback } from "react";
 import { cn } from "@/lib/utils";
 import { SelectCategory } from "./SelectCategory";
-import { useCategories } from "@/features/category/hooks/useCategory";
 import {
   UpdateMenuFormInput,
   UpdateMenuFormOutput,
@@ -49,12 +48,17 @@ import { useRouter } from "next/navigation";
 import { MenuType } from "@/types/menu";
 import Image from "next/image";
 import { getImageUrl } from "@/utils/getImageUrl";
-import { useUpdateMenu } from "../hooks/useUpdateMenu";
+import { CategoryType } from "@/types/category";
+import { updateMenuAction } from "../actions/menu-action";
 
-export function FormEditMenu({ menu }: { menu: MenuType }) {
+export function FormEditMenu({
+  menu,
+  categories,
+}: {
+  menu: MenuType;
+  categories: CategoryType[];
+}) {
   const router = useRouter();
-
-  const { data: categories, isPending: isCategoriesPending } = useCategories();
 
   const onFileReject = useCallback((file: File, message: string) => {
     toast(message, {
@@ -74,26 +78,21 @@ export function FormEditMenu({ menu }: { menu: MenuType }) {
     },
   });
 
-  const updateMenu = useUpdateMenu();
+  const onsubmit = async (data: UpdateMenuFormOutput) => {
+    const result = await updateMenuAction(menu.id, data);
 
-  const onsubmit = (data: UpdateMenuFormOutput) => {
-    updateMenu.mutate(
-      { id: menu.id, data },
-      {
-        onSuccess: () => {
-          toast.success("Menu updated successfully", {
-            position: "top-right",
-          });
-          router.push("/dashboard/menu");
-          router.refresh();
-        },
-        onError: (error) => {
-          toast.error(error.message, {
-            position: "top-right",
-          });
-        },
-      },
-    );
+    if (!result.success) {
+      toast.error(result.message, {
+        position: "top-right",
+      });
+      return;
+    }
+
+    toast.success(result.message, {
+      position: "top-right",
+    });
+    router.push("/dashboard/menu");
+    router.refresh();
   };
 
   return (
@@ -192,7 +191,6 @@ export function FormEditMenu({ menu }: { menu: MenuType }) {
                       categories={categories ?? []}
                       onChange={field.onChange}
                       value={selectedCategory}
-                      isPending={isCategoriesPending}
                     />
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />
@@ -369,24 +367,28 @@ export function FormEditMenu({ menu }: { menu: MenuType }) {
           type="button"
           variant="outline"
           onClick={() => router.back()}
-          disabled={updateMenu.isPending}
+          disabled={form.formState.isSubmitting}
           className="px-6"
         >
-          {updateMenu.isPending ? <Loader2 className="animate-spin" /> : <X />}
+          {form.formState.isSubmitting ? (
+            <Loader2 className="animate-spin" />
+          ) : (
+            <X />
+          )}
           Cancel
         </Button>
         <Button
           type="submit"
           form="update-menu-form"
-          disabled={updateMenu.isPending}
+          disabled={form.formState.isSubmitting}
           className="px-6"
         >
-          {updateMenu.isPending ? (
+          {form.formState.isSubmitting ? (
             <Loader2 className="animate-spin" />
           ) : (
             <Check />
           )}
-          {updateMenu.isPending ? "Saving..." : "Save Changes"}
+          {form.formState.isSubmitting ? "Saving..." : "Save Changes"}
         </Button>
       </CardFooter>
     </Card>
