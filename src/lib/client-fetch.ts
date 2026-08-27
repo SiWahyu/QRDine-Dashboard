@@ -6,17 +6,14 @@ export async function clientFetch<T>(
 ): Promise<T> {
   const isFormData = options?.body instanceof FormData;
 
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/api${path}`,
-    {
-      ...options,
-      headers: {
-        Accept: "application/json",
-        ...(isFormData ? {} : { "Content-Type": "application/json" }),
-        ...options?.headers,
-      },
+  const res = await fetch(`/api${path}`, {
+    ...options,
+    headers: {
+      Accept: "application/json",
+      ...(isFormData ? {} : { "Content-Type": "application/json" }),
+      ...options?.headers,
     },
-  );
+  });
 
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
