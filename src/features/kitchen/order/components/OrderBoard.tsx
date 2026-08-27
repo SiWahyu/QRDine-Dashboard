@@ -5,6 +5,7 @@ import { useOrders } from "../hooks/useOrders";
 import { OrderBoardContent } from "./OrderBoardContent";
 import { OrderBoardError } from "./OrderBoardError";
 import { OrderBoardSkeleton } from "./OrderBoardSkeleton";
+import OrderEventListener from "./OrderEventListener";
 
 export default function OrderBoard() {
   const { data, isLoading, isError, refetch } = useOrders();
@@ -21,5 +22,10 @@ export default function OrderBoard() {
     return null;
   }
 
-  return <OrderBoardContent data={data} />;
+  return (
+    <>
+      <OrderEventListener />
+      <OrderBoardContent data={data} />
+    </>
+  );
 }
