@@ -16,7 +16,12 @@ export function OrderCard({
   className?: string;
 }) {
   return (
-    <div className={cn("rounded-lg border bg-card p-4 shadow-sm", className)}>
+    <div
+      className={cn(
+        "rounded-lg border bg-card p-4 shadow-sm cursor-pointer",
+        className,
+      )}
+    >
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <p className="truncate font-semibold">{order.order_number}</p>

@@ -13,16 +13,12 @@ export function OrderEventListener() {
     const channel = echo.channel("orders");
 
     channel.listen(".order.created", () => {
-      console.log("Order created!");
-
       queryClient.invalidateQueries({
         queryKey: ["orders"],
       });
     });
 
     channel.listen(".order.updated", () => {
-      console.log("Order updated!");
-
       queryClient.invalidateQueries({
         queryKey: ["orders"],
       });
