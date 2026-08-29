@@ -18,6 +18,7 @@ import {
   ShoppingBag,
   HandPlatter,
   Armchair,
+  HandCoins,
 } from "lucide-react";
 import { NavUser } from "./NavUser";
 import { NavMain } from "./NavMain";
@@ -90,6 +91,14 @@ const kitchenNavItems = [
   },
 ];
 
+const cashierNavItems = [
+  {
+    title: "Cashier",
+    url: "/cashier",
+    icon: <HandCoins />,
+  },
+];
+
 export function AppSidebar({
   user,
   ...props
@@ -97,10 +106,25 @@ export function AppSidebar({
   user: UserType;
 }) {
   const pathname = usePathname();
-  const isAdmin = user.role === "admin";
+  const role = user.role;
 
-  const navItems = isAdmin ? adminNavItems : kitchenNavItems;
-  const navLabel = isAdmin ? "Dashboard" : "Kitchen";
+  const navConfig = {
+    admin: {
+      items: adminNavItems,
+      label: "Dashboard",
+    },
+    kitchen: {
+      items: kitchenNavItems,
+      label: "Kitchen",
+    },
+    cashier: {
+      items: cashierNavItems,
+      label: "Cashier",
+    },
+  };
+
+  const { items: navItems, label: navLabel } =
+    navConfig[role as keyof typeof navConfig] ?? navConfig.admin;
 
   const activeNavItems = navItems.map((item) => ({
     ...item,

@@ -50,8 +50,13 @@ export function LoginForm({
 
     if (result.user.role === "admin") {
       router.push("/dashboard");
-    } else if (result.user.role === "kitchen") {
+    }
+    if (result.user.role === "kitchen") {
       router.push("/kitchen/order");
+    }
+
+    if (result.user.role === "cashier") {
+      router.push("/cashier");
     }
   };
   return (
