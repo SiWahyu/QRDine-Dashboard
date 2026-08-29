@@ -1,5 +1,4 @@
 import {
-  BadgeCheck,
   Bell,
   CheckCircle2,
   ChefHat,
