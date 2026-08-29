@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import type { OrderStatus } from "@/types/order";
-import { updateOrderStatus } from "../services/order.service";
+import { updateOrderStatus } from "../services/order-server.service";
 
 export function useUpdateOrderStatus() {
   const queryClient = useQueryClient();
